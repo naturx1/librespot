@@ -1,0 +1,35 @@
+name: Build Librespot for Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions/setup-rust@v1
+        with:
+          rustup-components: rustfmt, clippy
+          rust-version: stable
+
+      - name: Add Windows target
+        run: rustup target add x86_64-pc-windows-msvc
+
+      - name: Install MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build project
+        run: cargo build --release
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: librespot-exe
+          path: target/release/librespot.exe
