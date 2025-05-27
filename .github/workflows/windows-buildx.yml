@@ -1,0 +1,31 @@
+name: Build Librespot for Windows
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: x86_64-pc-windows-msvc
+          override: true
+
+      - name: Add required target
+        run: rustup target add x86_64-pc-windows-msvc
+
+      - name: Build Librespot
+        run: cargo build --release --target x86_64-pc-windows-msvc
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v3
+        with:
+          name: librespot-exe
+          path: target/x86_64-pc-windows-msvc/release/librespot.exe
